@@ -518,6 +518,16 @@ schannel_connect_step2(struct connectdata *conn, int sockindex)
     infof(data, "schannel: SSL/TLS handshake complete\n");
   }
 
+  /* give application a chance to check SSL set up. */
+  if (data->set.ssl.fsslctx) {
+      CURLcode result = CURLE_OK;
+      result = (*data->set.ssl.fsslctx)(data, &connssl->ctxt->ctxt_handle, data->set.ssl.fsslctxp);
+      if (result) {
+          failf(data, "error signaled by ssl ctx callback");
+          return result;
+      }
+  }
+
 #ifdef _WIN32_WCE
   /* Windows CE doesn't do any server certificate validation.
      We have to do it manually. */
