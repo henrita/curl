@@ -198,6 +198,22 @@ static CURLcode getinfo_long(struct SessionHandle *data, CURLINFO info,
   case CURLINFO_RTSP_CSEQ_RECV:
     *param_longp = data->state.rtsp_CSeq_recv;
     break;
+  case CURLINFO_HTTP_VERSION:
+    switch (data->info.httpversion) {
+    case 10:
+      *param_longp = CURL_HTTP_VERSION_1_0;
+      break;
+    case 11:
+      *param_longp = CURL_HTTP_VERSION_1_1;
+      break;
+    case 20:
+      *param_longp = CURL_HTTP_VERSION_2_0;
+      break;
+    default:
+      *param_longp = CURL_HTTP_VERSION_NONE;
+      break;
+    }
+    break;
 
   default:
     return CURLE_UNKNOWN_OPTION;
@@ -307,7 +323,7 @@ static CURLcode getinfo_slist(struct SessionHandle *data, CURLINFO info,
 #elif defined(USE_GSKIT)
             tsi->internals = (void *)conn->ssl[i].handle;
 #elif defined(USE_MBEDTLS)
-            tsi->internals = (void *)&conn->ssl[i].ssn;
+            tsi->internals = (void *)&conn->ssl[i].ssl;
 #elif defined(USE_NSS)
             tsi->internals = (void *)conn->ssl[i].handle;
 #elif defined(USE_OPENSSL)
@@ -316,7 +332,7 @@ static CURLcode getinfo_slist(struct SessionHandle *data, CURLINFO info,
                               (void *)conn->ssl[i].ctx :
                               (void *)conn->ssl[i].handle);
 #elif defined(USE_POLARSSL)
-            tsi->internals = (void *)&conn->ssl[i].ssn;
+            tsi->internals = (void *)&conn->ssl[i].ssl;
 #elif defined(USE_SCHANNEL)
             tsi->internals = (void *)&conn->ssl[i].ctxt->ctxt_handle;
 #elif defined(USE_SSL)

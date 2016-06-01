@@ -98,6 +98,9 @@ int Curl_schannel_random(unsigned char *entropy, size_t length);
 #define CURL_SSL_BACKEND CURLSSLBACKEND_SCHANNEL
 #define have_curlssl_ssl_ctx 1
 
+/* this backend supports CURLOPT_CERTINFO */
+#define have_curlssl_certinfo 1
+
 /* API setup for Schannel */
 #define curlssl_init Curl_schannel_init
 #define curlssl_cleanup Curl_schannel_cleanup

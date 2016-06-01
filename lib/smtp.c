@@ -82,9 +82,9 @@
 #include "curl_gethostname.h"
 #include "curl_sasl.h"
 #include "warnless.h"
+/* The last 3 #include files should be in this order */
 #include "curl_printf.h"
 #include "curl_memory.h"
-/* The last #include file should be: */
 #include "memdebug.h"
 
 /* Local API functions */
@@ -292,7 +292,7 @@ static void smtp_get_message(char *buffer, char** outptr)
   /* Find the end of the message */
   for(len = strlen(message); len--;)
     if(message[len] != '\r' && message[len] != '\n' && message[len] != ' ' &&
-        message[len] != '\t')
+       message[len] != '\t')
       break;
 
   /* Terminate the message */
@@ -490,7 +490,7 @@ static CURLcode smtp_perform_authentication(struct connectdata *conn)
   /* Check we have enough data to authenticate with, and the
      server supports authentiation, and end the connect phase if not */
   if(!smtpc->auth_supported ||
-      !Curl_sasl_can_authenticate(&smtpc->sasl, conn)) {
+     !Curl_sasl_can_authenticate(&smtpc->sasl, conn)) {
     state(conn, SMTP_STOP);
     return result;
   }
@@ -526,9 +526,9 @@ static CURLcode smtp_perform_command(struct connectdata *conn)
   /* Send the command */
   if(smtp->rcpt)
     result = Curl_pp_sendf(&conn->proto.smtpc.pp, "%s %s",
-                            smtp->custom && smtp->custom[0] != '\0' ?
-                            smtp->custom : "VRFY",
-                            smtp->rcpt->data);
+                           smtp->custom && smtp->custom[0] != '\0' ?
+                           smtp->custom : "VRFY",
+                           smtp->rcpt->data);
   else
     result = Curl_pp_sendf(&conn->proto.smtpc.pp, "%s",
                            smtp->custom && smtp->custom[0] != '\0' ?
@@ -633,10 +633,10 @@ static CURLcode smtp_perform_rcpt_to(struct connectdata *conn)
   /* Send the RCPT TO command */
   if(smtp->rcpt->data[0] == '<')
     result = Curl_pp_sendf(&conn->proto.smtpc.pp, "RCPT TO:%s",
-                            smtp->rcpt->data);
+                           smtp->rcpt->data);
   else
     result = Curl_pp_sendf(&conn->proto.smtpc.pp, "RCPT TO:<%s>",
-                            smtp->rcpt->data);
+                           smtp->rcpt->data);
   if(!result)
     state(conn, SMTP_RCPT);
 
@@ -770,8 +770,8 @@ static CURLcode smtp_state_ehlo_resp(struct connectdata *conn, int smtpcode,
           wordlen++;
 
         /* Test the word for a matching authentication mechanism */
-        if((mechbit = Curl_sasl_decode_mech(line, wordlen, &llen)) &&
-           llen == wordlen)
+        mechbit = Curl_sasl_decode_mech(line, wordlen, &llen);
+        if(mechbit && llen == wordlen)
           smtpc->sasl.authmechs |= mechbit;
 
         line += wordlen;
@@ -1204,10 +1204,6 @@ static CURLcode smtp_done(struct connectdata *conn, CURLcode status,
   (void)premature;
 
   if(!smtp || !pp->conn)
-    /* When the easy handle is removed from the multi interface while libcurl
-       is still trying to resolve the host name, the SMTP struct is not yet
-       initialized. However, the removal action calls Curl_done() which in
-       turn calls this function, so we simply return success. */
     return CURLE_OK;
 
   if(status) {
@@ -1262,8 +1258,7 @@ static CURLcode smtp_done(struct connectdata *conn, CURLcode status,
 
        TODO: when the multi interface is used, this _really_ should be using
        the smtp_multi_statemach function but we have no general support for
-       non-blocking DONE operations, not in the multi state machine and with
-       Curl_done() invokes on several places in the code!
+       non-blocking DONE operations!
     */
     result = smtp_block_statemach(conn);
   }
@@ -1510,7 +1505,7 @@ static CURLcode smtp_parse_url_options(struct connectdata *conn)
     const char *value;
 
     while(*ptr && *ptr != '=')
-        ptr++;
+      ptr++;
 
     value = ptr + 1;
 

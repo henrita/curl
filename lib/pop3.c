@@ -83,9 +83,9 @@
 #include "curl_sasl.h"
 #include "curl_md5.h"
 #include "warnless.h"
+/* The last 3 #include files should be in this order */
 #include "curl_printf.h"
 #include "curl_memory.h"
-/* The last #include file should be: */
 #include "memdebug.h"
 
 /* Local API functions */
@@ -753,8 +753,8 @@ static CURLcode pop3_state_capa_resp(struct connectdata *conn, int pop3code,
           wordlen++;
 
         /* Test the word for a matching authentication mechanism */
-        if((mechbit = Curl_sasl_decode_mech(line, wordlen, &llen)) &&
-           llen == wordlen)
+        mechbit = Curl_sasl_decode_mech(line, wordlen, &llen);
+        if(mechbit && llen == wordlen)
           pop3c->sasl.authmechs |= mechbit;
 
         line += wordlen;
@@ -1166,10 +1166,6 @@ static CURLcode pop3_done(struct connectdata *conn, CURLcode status,
   (void)premature;
 
   if(!pop3)
-    /* When the easy handle is removed from the multi interface while libcurl
-       is still trying to resolve the host name, the POP3 struct is not yet
-       initialized. However, the removal action calls Curl_done() which in
-       turn calls this function, so we simply return success. */
     return CURLE_OK;
 
   if(status) {

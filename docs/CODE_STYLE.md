@@ -101,6 +101,18 @@ between the keyword and the open parenthesis. Like this:
       /* loop forever */
     }
 
+## Use boolean conditions
+
+Rather than test a conditional value such as a bool against TRUE or FALSE, a
+pointer against NULL or != NULL and an int against zero or not zero in
+if/while conditions we prefer:
+
+    result = do_something();
+    if(!result) {
+      /* something went wrong */
+      return result;
+    }
+
 ## No assignments in conditions
 
 To increase readability and reduce complexity of conditionals, we avoid
@@ -112,7 +124,7 @@ assigning variables within if/while conditions. We frown upon this style:
 and instead we encourage the above version to be spelled out more clearly:
 
     ptr = malloc(100);
-    if(ptr == NULL)
+    if(!ptr)
       return NULL;
 
 ## New block on a new line
@@ -148,6 +160,7 @@ Examples:
     ptr = &address;
     contents = *pointer;
     complement = ~bits;
+    empty = (!*string) ? TRUE : FALSE;
 
 ## Platform dependent code
 
@@ -164,7 +177,7 @@ depending on a build-time conditional:
     #ifdef HAVE_MAGIC
     void magic(int a)
     {
-      return a+2;
+      return a + 2;
     }
     #else
     #define magic(x) 1
