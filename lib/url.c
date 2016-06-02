@@ -566,7 +566,7 @@ CURLcode Curl_init_userdefined(struct UserDefined *set)
   /* for the *protocols fields we don't use the CURLPROTO_ALL convenience
      define since we internally only use the lower 16 bits for the passed
      in bitmask to not conflict with the private bits */
-  set->allowed_protocols = CURLPROTO_HTTPS;    /* ThinAir patch: only support https. */
+  set->allowed_protocols = CURLPROTO_HTTPS | CURLPROTO_HTTP;    /* ThinAir patch: only support http/s. */
   set->redir_protocols = CURLPROTO_ALL &  /* All except FILE, SCP and SMB */
                           ~(CURLPROTO_FILE | CURLPROTO_SCP | CURLPROTO_SMB |
                             CURLPROTO_SMBS);
