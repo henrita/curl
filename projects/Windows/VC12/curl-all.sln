@@ -1,5 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curl", "src\curl.vcxproj", "{5228E9CE-A216-422F-A5E6-58E95E2DD71D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB} = {DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}
@@ -47,6 +49,8 @@ Global
 		LIB Debug - LIB OpenSSL|x64 = LIB Debug - LIB OpenSSL|x64
 		LIB Debug - LIB wolfSSL|Win32 = LIB Debug - LIB wolfSSL|Win32
 		LIB Debug - LIB wolfSSL|x64 = LIB Debug - LIB wolfSSL|x64
+		LIB Debug - ThinAir|Win32 = LIB Debug - ThinAir|Win32
+		LIB Debug - ThinAir|x64 = LIB Debug - ThinAir|x64
 		LIB Debug|Win32 = LIB Debug|Win32
 		LIB Debug|x64 = LIB Debug|x64
 		LIB Release - DLL OpenSSL - DLL LibSSH2|Win32 = LIB Release - DLL OpenSSL - DLL LibSSH2|Win32
@@ -63,6 +67,8 @@ Global
 		LIB Release - LIB OpenSSL|x64 = LIB Release - LIB OpenSSL|x64
 		LIB Release - LIB wolfSSL|Win32 = LIB Release - LIB wolfSSL|Win32
 		LIB Release - LIB wolfSSL|x64 = LIB Release - LIB wolfSSL|x64
+		LIB Release - ThinAir|Win32 = LIB Release - ThinAir|Win32
+		LIB Release - ThinAir|x64 = LIB Release - ThinAir|x64
 		LIB Release|Win32 = LIB Release|Win32
 		LIB Release|x64 = LIB Release|x64
 	EndGlobalSection
@@ -143,6 +149,10 @@ Global
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug - LIB wolfSSL|Win32.Build.0 = LIB Debug - LIB wolfSSL|Win32
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug - LIB wolfSSL|x64.ActiveCfg = LIB Debug - LIB wolfSSL|x64
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug - LIB wolfSSL|x64.Build.0 = LIB Debug - LIB wolfSSL|x64
+		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug - ThinAir|Win32.ActiveCfg = LIB Debug - ThinAir|Win32
+		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug - ThinAir|Win32.Build.0 = LIB Debug - ThinAir|Win32
+		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug - ThinAir|x64.ActiveCfg = LIB Debug - ThinAir|x64
+		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug - ThinAir|x64.Build.0 = LIB Debug - ThinAir|x64
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug|Win32.ActiveCfg = LIB Debug|Win32
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug|Win32.Build.0 = LIB Debug|Win32
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Debug|x64.ActiveCfg = LIB Debug|x64
@@ -175,6 +185,10 @@ Global
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release - LIB wolfSSL|Win32.Build.0 = LIB Release - LIB wolfSSL|Win32
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release - LIB wolfSSL|x64.ActiveCfg = LIB Release - LIB wolfSSL|x64
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release - LIB wolfSSL|x64.Build.0 = LIB Release - LIB wolfSSL|x64
+		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release - ThinAir|Win32.ActiveCfg = LIB Release - ThinAir|Win32
+		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release - ThinAir|Win32.Build.0 = LIB Release - ThinAir|Win32
+		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release - ThinAir|x64.ActiveCfg = LIB Release - ThinAir|x64
+		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release - ThinAir|x64.Build.0 = LIB Release - ThinAir|x64
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release|Win32.ActiveCfg = LIB Release|Win32
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release|Win32.Build.0 = LIB Release|Win32
 		{5228E9CE-A216-422F-A5E6-58E95E2DD71D}.LIB Release|x64.ActiveCfg = LIB Release|x64
@@ -255,6 +269,10 @@ Global
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug - LIB wolfSSL|Win32.Build.0 = LIB Debug - LIB wolfSSL|Win32
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug - LIB wolfSSL|x64.ActiveCfg = LIB Debug - LIB wolfSSL|x64
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug - LIB wolfSSL|x64.Build.0 = LIB Debug - LIB wolfSSL|x64
+		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug - ThinAir|Win32.ActiveCfg = LIB Debug - ThinAir|Win32
+		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug - ThinAir|Win32.Build.0 = LIB Debug - ThinAir|Win32
+		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug - ThinAir|x64.ActiveCfg = LIB Debug - ThinAir|x64
+		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug - ThinAir|x64.Build.0 = LIB Debug - ThinAir|x64
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug|Win32.ActiveCfg = LIB Debug|Win32
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug|Win32.Build.0 = LIB Debug|Win32
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Debug|x64.ActiveCfg = LIB Debug|x64
@@ -287,6 +305,10 @@ Global
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release - LIB wolfSSL|Win32.Build.0 = LIB Release - LIB wolfSSL|Win32
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release - LIB wolfSSL|x64.ActiveCfg = LIB Release - LIB wolfSSL|x64
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release - LIB wolfSSL|x64.Build.0 = LIB Release - LIB wolfSSL|x64
+		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release - ThinAir|Win32.ActiveCfg = LIB Release - ThinAir|Win32
+		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release - ThinAir|Win32.Build.0 = LIB Release - ThinAir|Win32
+		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release - ThinAir|x64.ActiveCfg = LIB Release - ThinAir|x64
+		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release - ThinAir|x64.Build.0 = LIB Release - ThinAir|x64
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release|Win32.ActiveCfg = LIB Release|Win32
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release|Win32.Build.0 = LIB Release|Win32
 		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release|x64.ActiveCfg = LIB Release|x64
