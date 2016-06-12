@@ -59,6 +59,7 @@
 #include "x509asn1.h"
 #include "curl_printf.h"
 #include "curl_memory.h"
+#include <VersionHelpers.h>
 /* The last #include file should be: */
 #include "memdebug.h"
 
@@ -79,6 +80,12 @@ static Curl_send schannel_send;
 #ifdef _WIN32_WCE
 static CURLcode verify_certificate(struct connectdata *conn, int sockindex);
 #endif
+
+static __inline bool alpn_supported()
+{
+    /* ALPN support has been added to schannel in Windows 8.1 https://technet.microsoft.com/en-us/library/hh831771%28v=ws.11%29.aspx */
+    return IsWindows8Point1OrGreater();
+}
 
 static void InitSecBuffer(SecBuffer *buffer, unsigned long BufType,
                           void *BufDataPtr, unsigned long BufByteSize)
@@ -243,7 +250,7 @@ schannel_connect_step1(struct connectdata *conn, int sockindex)
   }
 
 #ifdef HAS_ALPN
-  if(conn->bits.tls_enable_alpn) {
+  if(conn->bits.tls_enable_alpn && alpn_supported()) {
     int cur = 0;
     int list_start_index = 0;
     unsigned int* extension_len = NULL;
@@ -653,7 +660,7 @@ schannel_connect_step3(struct connectdata *conn, int sockindex)
   }
 
 #ifdef HAS_ALPN
-  if(conn->bits.tls_enable_alpn) {
+  if(conn->bits.tls_enable_alpn && alpn_supported()) {
     sspi_status = s_pSecFn->QueryContextAttributes(&connssl->ctxt->ctxt_handle,
       SECPKG_ATTR_APPLICATION_PROTOCOL, &alpn_result);
 
