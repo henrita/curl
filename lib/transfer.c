@@ -87,7 +87,7 @@
  */
 CURLcode Curl_fillreadbuffer(struct connectdata *conn, int bytes, int *nreadp)
 {
-  struct SessionHandle *data = conn->data;
+  struct Curl_easy *data = conn->data;
   size_t buffersize = (size_t)bytes;
   int nread;
 #ifdef CURL_DOES_CONVERSIONS
@@ -242,7 +242,7 @@ CURLcode Curl_fillreadbuffer(struct connectdata *conn, int bytes, int *nreadp)
  */
 CURLcode Curl_readrewind(struct connectdata *conn)
 {
-  struct SessionHandle *data = conn->data;
+  struct Curl_easy *data = conn->data;
 
   conn->bits.rewindaftersend = FALSE; /* we rewind now */
 
@@ -352,7 +352,7 @@ static void read_rewind(struct connectdata *conn,
  * Check to see if CURLOPT_TIMECONDITION was met by comparing the time of the
  * remote document with the time provided by CURLOPT_TIMEVAL
  */
-bool Curl_meets_timecondition(struct SessionHandle *data, time_t timeofdoc)
+bool Curl_meets_timecondition(struct Curl_easy *data, time_t timeofdoc)
 {
   if((timeofdoc == 0) || (data->set.timevalue == 0))
     return TRUE;
@@ -384,11 +384,15 @@ bool Curl_meets_timecondition(struct SessionHandle *data, time_t timeofdoc)
  * Go ahead and do a read if we have a readable socket or if
  * the stream was rewound (in which case we have data in a
  * buffer)
+ *
+ * return '*comeback' TRUE if we didn't properly drain the socket so this
+ * function should get called again without select() or similar in between!
  */
-static CURLcode readwrite_data(struct SessionHandle *data,
+static CURLcode readwrite_data(struct Curl_easy *data,
                                struct connectdata *conn,
                                struct SingleRequest *k,
-                               int *didwhat, bool *done)
+                               int *didwhat, bool *done,
+                               bool *comeback)
 {
   CURLcode result = CURLE_OK;
   ssize_t nread; /* number of bytes read */
@@ -398,6 +402,7 @@ static CURLcode readwrite_data(struct SessionHandle *data,
   int maxloops = 100;
 
   *done = FALSE;
+  *comeback = FALSE;
 
   /* This is where we loop until we have read everything there is to
      read or we get a CURLE_AGAIN */
@@ -804,6 +809,12 @@ static CURLcode readwrite_data(struct SessionHandle *data,
 
   } while(data_pending(conn) && maxloops--);
 
+  if(maxloops <= 0) {
+    /* we mark it as read-again-please */
+    conn->cselect_bits = CURL_CSELECT_IN;
+    *comeback = TRUE;
+  }
+
   if(((k->keepon & (KEEP_RECV|KEEP_SEND)) == KEEP_SEND) &&
      conn->bits.close) {
     /* When we've read the entire thing and the close bit is set, the server
@@ -833,7 +844,7 @@ static CURLcode done_sending(struct connectdata *conn,
 /*
  * Send data to upload to the server, when the socket is writable.
  */
-static CURLcode readwrite_upload(struct SessionHandle *data,
+static CURLcode readwrite_upload(struct Curl_easy *data,
                                  struct connectdata *conn,
                                  struct SingleRequest *k,
                                  int *didwhat)
@@ -1029,10 +1040,14 @@ static CURLcode readwrite_upload(struct SessionHandle *data,
 /*
  * Curl_readwrite() is the low-level function to be called when data is to
  * be read and written to/from the connection.
+ *
+ * return '*comeback' TRUE if we didn't properly drain the socket so this
+ * function should get called again without select() or similar in between!
  */
 CURLcode Curl_readwrite(struct connectdata *conn,
-                        struct SessionHandle *data,
-                        bool *done)
+                        struct Curl_easy *data,
+                        bool *done,
+                        bool *comeback)
 {
   struct SingleRequest *k = &data->req;
   CURLcode result;
@@ -1077,7 +1092,7 @@ CURLcode Curl_readwrite(struct connectdata *conn,
   if((k->keepon & KEEP_RECV) &&
      ((select_res & CURL_CSELECT_IN) || conn->bits.stream_was_rewound)) {
 
-    result = readwrite_data(data, conn, k, &didwhat, done);
+    result = readwrite_data(data, conn, k, &didwhat, done, comeback);
     if(result || *done)
       return result;
   }
@@ -1208,7 +1223,7 @@ int Curl_single_getsock(const struct connectdata *conn,
                                                 of sockets */
                         int numsocks)
 {
-  const struct SessionHandle *data = conn->data;
+  const struct Curl_easy *data = conn->data;
   int bitmap = GETSOCK_BLANK;
   unsigned sockindex = 0;
 
@@ -1305,7 +1320,7 @@ long Curl_sleep_time(curl_off_t rate_bps, curl_off_t cur_rate_bps,
 
 /* Curl_init_CONNECT() gets called each time the handle switches to CONNECT
    which means this gets called once for each subsequent redirect etc */
-void Curl_init_CONNECT(struct SessionHandle *data)
+void Curl_init_CONNECT(struct Curl_easy *data)
 {
   data->state.fread_func = data->set.fread_func_set;
   data->state.in = data->set.in_set;
@@ -1316,7 +1331,7 @@ void Curl_init_CONNECT(struct SessionHandle *data)
  * once for one transfer no matter if it has redirects or do multi-pass
  * authentication etc.
  */
-CURLcode Curl_pretransfer(struct SessionHandle *data)
+CURLcode Curl_pretransfer(struct Curl_easy *data)
 {
   CURLcode result;
   if(!data->change.url) {
@@ -1403,7 +1418,7 @@ CURLcode Curl_pretransfer(struct SessionHandle *data)
 /*
  * Curl_posttransfer() is called immediately after a transfer ends
  */
-CURLcode Curl_posttransfer(struct SessionHandle *data)
+CURLcode Curl_posttransfer(struct Curl_easy *data)
 {
 #if defined(HAVE_SIGNAL) && defined(SIGPIPE) && !defined(HAVE_MSG_NOSIGNAL)
   /* restore the signal handler for SIGPIPE before we get back */
@@ -1660,7 +1675,7 @@ static char *concat_url(const char *base, const char *relurl)
  * Curl_follow() handles the URL redirect magic. Pass in the 'newurl' string
  * as given by the remote server and set up the new URL to request.
  */
-CURLcode Curl_follow(struct SessionHandle *data,
+CURLcode Curl_follow(struct Curl_easy *data,
                      char *newurl, /* this 'newurl' is the Location: string,
                                       and it must be malloc()ed before passed
                                       here */
@@ -1864,7 +1879,7 @@ CURLcode Curl_follow(struct SessionHandle *data,
 CURLcode Curl_retry_request(struct connectdata *conn,
                             char **url)
 {
-  struct SessionHandle *data = conn->data;
+  struct Curl_easy *data = conn->data;
 
   *url = NULL;
 
@@ -1875,13 +1890,12 @@ CURLcode Curl_retry_request(struct connectdata *conn,
     return CURLE_OK;
 
   if((data->req.bytecount + data->req.headerbytecount == 0) &&
-      conn->bits.reuse &&
-      !data->set.opt_no_body &&
-      (data->set.rtspreq != RTSPREQ_RECEIVE)) {
-    /* We got no data, we attempted to re-use a connection and yet we want a
-       "body". This might happen if the connection was left alive when we were
-       done using it before, but that was closed when we wanted to read from
-       it again. Bad luck. Retry the same request on a fresh connect! */
+     conn->bits.reuse &&
+     (data->set.rtspreq != RTSPREQ_RECEIVE)) {
+    /* We didn't get a single byte when we attempted to re-use a
+       connection. This might happen if the connection was left alive when we
+       were done using it before, but that was closed when we wanted to use it
+       again. Bad luck. Retry the same request on a fresh connect! */
     infof(conn->data, "Connection died, retrying a fresh connect\n");
     *url = strdup(conn->data->change.url);
     if(!*url)
@@ -1920,7 +1934,7 @@ Curl_setup_transfer(
   curl_off_t *writecountp   /* return number of bytes written or NULL */
   )
 {
-  struct SessionHandle *data;
+  struct Curl_easy *data;
   struct SingleRequest *k;
 
   DEBUGASSERT(conn != NULL);

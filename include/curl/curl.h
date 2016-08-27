@@ -30,6 +30,10 @@
  *   https://cool.haxx.se/mailman/listinfo/curl-library/
  */
 
+#ifdef CURL_NO_OLDIES
+#define CURL_STRICTER
+#endif
+
 #include "curlver.h"         /* libcurl version defines   */
 #include "curlbuild.h"       /* libcurl build definitions */
 #include "curlrules.h"       /* libcurl rules enforcement */
@@ -91,7 +95,13 @@
 extern "C" {
 #endif
 
+#if defined(BUILDING_LIBCURL) || defined(CURL_STRICTER)
+typedef struct Curl_easy CURL;
+typedef struct Curl_share CURLSH;
+#else
 typedef void CURL;
+typedef void CURLSH;
+#endif
 
 /*
  * libcurl external API function linkage decorations.
@@ -2258,7 +2268,6 @@ typedef void (*curl_unlock_function)(CURL *handle,
                                      curl_lock_data data,
                                      void *userptr);
 
-typedef void CURLSH;
 
 typedef enum {
   CURLSHE_OK,  /* all is fine */
