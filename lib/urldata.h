@@ -330,6 +330,7 @@ struct ssl_connect_data {
   CURLcode recv_unrecoverable_err; /* schannel_recv had an unrecoverable err */
   bool recv_sspi_close_notify; /* true if connection closed by close_notify */
   bool recv_connection_closed; /* true if connection closed, regardless how */
+  bool use_alpn; /* true if ALPN is used for this connection */
 #elif defined(USE_DARWINSSL)
   SSLContextRef ssl_ctx;
   curl_socket_t ssl_sockfd;
@@ -817,6 +818,7 @@ struct Curl_handler {
 #define PROTOPT_CREDSPERREQUEST (1<<7) /* requires login credentials per
                                           request instead of per connection */
 #define PROTOPT_ALPN_NPN (1<<8) /* set ALPN and/or NPN for this */
+#define PROTOPT_STREAM (1<<9) /* a protocol with individual logical streams */
 
 /* return the count of bytes sent, or -1 on error */
 typedef ssize_t (Curl_send)(struct connectdata *conn, /* connection data */
@@ -1171,6 +1173,14 @@ struct Progress {
   struct timeval t_startsingle;
   struct timeval t_startop;
   struct timeval t_acceptdata;
+
+  /* upload speed limit */
+  struct timeval ul_limit_start;
+  curl_off_t ul_limit_size;
+  /* download speed limit */
+  struct timeval dl_limit_start;
+  curl_off_t dl_limit_size;
+
 #define CURR_TIME (5+1) /* 6 entries for 5 seconds */
 
   curl_off_t speeder[ CURR_TIME ];
